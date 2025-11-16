@@ -149,15 +149,6 @@ const results = await db.query({
 // }>
 ```
 
-## Performance
-
-Uses **HNSW (Hierarchical Navigable Small World)** for fast approximate nearest neighbor search:
-
-- **1K vectors**: ~1ms
-- **10K vectors**: ~10ms  
-- **100K vectors**: ~20ms
-- **1M vectors**: ~30ms
-
 Data is persisted to JSON files and automatically loaded on startup.
 
 ## Use Cases
