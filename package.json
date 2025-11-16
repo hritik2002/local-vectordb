@@ -1,6 +1,6 @@
 {
   "name": "@hritik2002/local-vectordb",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Local vector database with embeddings & semantic search. Uses HNSW for fast approximate nearest neighbor search.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
