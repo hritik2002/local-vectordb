@@ -1,0 +1,10 @@
+src/
+tsconfig.json
+node_modules/
+vdb/
+local_vector_db/
+*.log
+.DS_Store
+.env
+.git/
+.gitignore

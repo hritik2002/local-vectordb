@@ -1,0 +1,9 @@
+src/
+tsconfig.json
+node_modules/
+vdb/
+local_vector_db/
+*.log
+.DS_Store
+.env
+dist/          # Add this line - exclude entire dist folder
