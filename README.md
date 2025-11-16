@@ -9,7 +9,7 @@ Perfect for prototyping semantic search, RAG applications, or any project that n
 - 🚀 **Zero Configuration** - Works out of the box, no cloud setup needed
 - 💰 **Free & Local** - No paid services, runs entirely on your machine
 - ⚡ **Fast** - HNSW algorithm for sub-millisecond searches even with 100K+ vectors
-- 📦 **Simple API** - Just 3 methods: `upsert()`, `query()`, and you're done
+- 📦 **Simple API** - Just 2 methods: `upsert()`, `query()`, and you're done
 - 🔒 **Private** - All data stays on your machine, perfect for sensitive projects
 - 🎯 **MVP Ready** - Get semantic search working in minutes, not hours
 
