@@ -1,142 +1,201 @@
-# VectorDB - TypeScript Vector Database with Multiple Embedding Models
+# @hritik2002/local-vectordb
 
-A flexible vector database implementation with support for multiple embedding models (OpenAI, Xenova/Transformers, and custom).
+A **simple, local vector database** for quick hack projects and MVPs. No cloud services, no API keys required (unless you want to use OpenAI), everything runs locally.
 
-## Features
+Perfect for prototyping semantic search, RAG applications, or any project that needs vector similarity search without the complexity of setting up Pinecone or other paid services.
 
-- **Multiple Embedding Models**: Choose from OpenAI, Xenova (local transformers), or custom embedders
-- **TypeScript**: Full type safety and IntelliSense support
-- **Scalable Semantic Search**: HNSW-based approximate nearest neighbor search (O(log n) instead of O(n))
-- **Persistent Storage**: JSON-based local storage with automatic index rebuilding
-- **Flexible Configuration**: Model-specific configuration options
+## Why This?
 
+- 🚀 **Zero Configuration** - Works out of the box, no cloud setup needed
+- 💰 **Free & Local** - No paid services, runs entirely on your machine
+- ⚡ **Fast** - HNSW algorithm for sub-millisecond searches even with 100K+ vectors
+- 📦 **Simple API** - Just 3 methods: `upsert()`, `query()`, and you're done
+- 🔒 **Private** - All data stays on your machine, perfect for sensitive projects
+- 🎯 **MVP Ready** - Get semantic search working in minutes, not hours
 
-## Installation
+## Quick Start
 
 ```bash
-npm install
+npm install @hritik2002/local-vectordb
 ```
 
-## Usage
-
-### 1. OpenAI Embeddings
-
 ```typescript
-import VectorDB from "./clientVectorDb.js";
-import type { EmbedderConfig } from "./types.js";
+import { VectorDB } from "@hritik2002/local-vectordb";
+import type { EmbedderConfig } from "@hritik2002/local-vectordb";
 
-const openaiConfig: EmbedderConfig = {
-  type: "openai",
-  apiKey: "your-api-key", // or set OPENAI_API_KEY env variable
-  model: "text-embedding-ada-002", // or "text-embedding-3-small" | "text-embedding-3-large"
+// Option 1: Use local embeddings (100% free, no API keys)
+const localConfig: EmbedderConfig = {
+  type: "xenova",
+  model: "Xenova/multi-qa-MiniLM-L6-cos-v1", // Downloads automatically
 };
 
 const db = new VectorDB({
-  dir: "./vdb",
-  storeName: "default",
-  embedderConfig: openaiConfig,
+  embedderConfig: localConfig,
 });
 
-// Insert documents
-await db.upsert("Hritik Sharma works at Dream11.", {
-  metadata: { source: "bio" },
-});
+// Add documents
+await db.upsert("Hritik works at Dream11 as a software engineer");
+await db.upsert("The weather is sunny today");
+await db.upsert("Python is a programming language");
 
 // Search
 const results = await db.query({
   query: "Where does Hritik work?",
   topK: 3,
 });
+
+console.log(results);
+// [
+//   {
+//     id: "...",
+//     score: 0.89,
+//     text: "Hritik works at Dream11 as a software engineer",
+//     metadata: {}
+//   },
+//   ...
+// ]
 ```
 
-### 2. Xenova (Local Transformers) Embeddings
+## Embedding Options
+
+### 1. Local Embeddings (Recommended for MVPs)
+
+**100% free, no API keys, works offline:**
 
 ```typescript
-import VectorDB from "./clientVectorDb.js";
-import type { EmbedderConfig } from "./types.js";
-
-const xenovaConfig: EmbedderConfig = {
-  type: "xenova",
-  model: "Xenova/multi-qa-MiniLM-L6-cos-v1", // or "Xenova/all-MiniLM-L6-v2" | "Xenova/all-mpnet-base-v2"
-};
+import { VectorDB } from "@hritik2002/local-vectordb";
 
 const db = new VectorDB({
-  dir: "./vdb",
-  storeName: "default",
-  embedderConfig: xenovaConfig,
-});
-```
-
-### 3. Custom Embedder
-
-```typescript
-import VectorDB from "./clientVectorDb.js";
-import type { EmbedderConfig } from "./types.js";
-
-const customConfig: EmbedderConfig = {
-  type: "custom",
-  embedFn: async (text: string) => {
-    // Your custom embedding logic
-    // Return an array of numbers
-    return Array(384).fill(0).map(() => Math.random());
+  embedderConfig: {
+    type: "xenova",
+    model: "Xenova/multi-qa-MiniLM-L6-cos-v1", // Best for Q&A
+    // or: "Xenova/all-MiniLM-L6-v2" // Faster, general purpose
+    // or: "Xenova/all-mpnet-base-v2" // Higher quality
   },
-  dimension: 384, // Must match your embedFn output
-};
-
-const db = new VectorDB({
-  dir: "./vdb",
-  storeName: "default",
-  embedderConfig: customConfig,
 });
 ```
 
-## Available Models
+Models download automatically on first use (~50-200MB).
 
-### OpenAI Models
-- `text-embedding-ada-002` (1536 dimensions) - Default
-- `text-embedding-3-small` (1536 dimensions)
-- `text-embedding-3-large` (3072 dimensions)
+### 2. OpenAI Embeddings (Optional)
 
-### Xenova Models
-- `Xenova/all-MiniLM-L6-v2` (384 dimensions) - Fast, general purpose
-- `Xenova/multi-qa-MiniLM-L6-cos-v1` (384 dimensions) - Optimized for Q&A
-- `Xenova/all-mpnet-base-v2` (768 dimensions) - Higher quality
+Only if you want higher quality embeddings (requires API key):
 
-## Performance & Scalability
-
-The vector database uses **HNSW (Hierarchical Navigable Small World)** algorithm for fast approximate nearest neighbor search:
-
-- **Before (Linear Scan)**: O(n) - scans all vectors
-- **After (HNSW)**: O(log n) - sub-linear search time
-
-**Performance Comparison:**
-- 1K vectors: ~1ms (both methods)
-- 10K vectors: ~10ms (HNSW) vs ~100ms (linear)
-- 100K vectors: ~20ms (HNSW) vs ~1s (linear)
-- 1M vectors: ~30ms (HNSW) vs ~10s+ (linear)
-
-The index is automatically rebuilt from persisted JSON files on startup, ensuring data durability while maintaining fast query performance.
-
-## Build & Run
-
-```bash
-# Build TypeScript
-npm run build
-
-# Run compiled code
-npm start
-
-# Build and run in one command
-npm run dev
+```typescript
+const db = new VectorDB({
+  embedderConfig: {
+    type: "openai",
+    apiKey: process.env.OPENAI_API_KEY, // or pass directly
+    model: "text-embedding-ada-002",
+  },
+});
 ```
 
-## TypeScript Types
+### 3. Custom Embeddings
 
-All types are exported from `src/types.ts`:
+Bring your own embedding function:
 
-- `EmbedderConfig` - Configuration for embedders
-- `VectorDBOptions` - VectorDB constructor options
-- `QueryOptions` - Query parameters
-- `QueryResult` - Query result structure
-- `UpsertOptions` - Upsert parameters
+```typescript
+const db = new VectorDB({
+  embedderConfig: {
+    type: "custom",
+    embedFn: async (text: string) => {
+      // Your embedding logic
+      return yourEmbeddingFunction(text);
+    },
+    dimension: 384, // Your embedding dimension
+  },
+});
+```
 
+## API
+
+### `new VectorDB(options)`
+
+```typescript
+interface VectorDBOptions {
+  dir?: string;              // Storage directory (default: "./vdb")
+  storeName?: string;         // Store name (default: "default")
+  embedderConfig: EmbedderConfig; // Embedding configuration
+}
+```
+
+### `db.upsert(text, options?)`
+
+Add or update a document:
+
+```typescript
+const id = await db.upsert("Your text here", {
+  metadata: { source: "document.pdf", page: 1 }
+});
+```
+
+### `db.query(options)`
+
+Search for similar documents:
+
+```typescript
+const results = await db.query({
+  query: "What is this about?",
+  topK: 5, // Number of results (default: 5)
+});
+
+// Returns:
+// Array<{
+//   id: string;
+//   score: number;        // Similarity score (0-1)
+//   text: string;         // Original text
+//   metadata: Record<string, any>;
+// }>
+```
+
+## Performance
+
+Uses **HNSW (Hierarchical Navigable Small World)** for fast approximate nearest neighbor search:
+
+- **1K vectors**: ~1ms
+- **10K vectors**: ~10ms  
+- **100K vectors**: ~20ms
+- **1M vectors**: ~30ms
+
+Data is persisted to JSON files and automatically loaded on startup.
+
+## Use Cases
+
+- 🧪 **Prototyping** - Quick semantic search for hackathons
+- 📚 **RAG Applications** - Local document search without cloud dependencies
+- 🔍 **Content Discovery** - Find similar content in your app
+- 💡 **MVPs** - Get to market faster without infrastructure setup
+- 🔒 **Private Projects** - Keep sensitive data on your machine
+
+## Comparison
+
+| Feature | This Package | Pinecone | Weaviate |
+|---------|-------------|----------|----------|
+| Setup Time | 0 minutes | 10+ minutes | 30+ minutes |
+| Cost | Free | Paid | Self-hosted |
+| Local | ✅ Yes | ❌ No | ⚠️ Optional |
+| API Complexity | Simple | Complex | Complex |
+| Best For | MVPs, Hacks | Production | Enterprise |
+
+## TypeScript Support
+
+Full TypeScript support with exported types:
+
+```typescript
+import type {
+  VectorDB,
+  EmbedderConfig,
+  QueryOptions,
+  QueryResult,
+  UpsertOptions,
+} from "@hritik2002/local-vectordb";
+```
+
+## License
+
+MIT
+
+## Contributing
+
+PRs welcome! This is built for the community of developers who want to move fast without infrastructure headaches.
