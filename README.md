@@ -192,6 +192,46 @@ import type {
 } from "@hritik2002/local-vectordb";
 ```
 
+## Future Scope
+
+This package is focused on simplicity for MVPs and quick projects. Here are some features we're considering for future versions:
+
+### Performance & Optimization
+- **Embedding Caching** - Cache computed embeddings to avoid recomputing for repeated upserts of the same text (will learn & implement - Medium)
+- **Batch Operations** - `upsertMany()` and `deleteMany()` for bulk operations (Easy | Medium)
+
+### Query Enhancements
+- **Metadata Filtering** - Filter results by metadata before/after vector searchript
+  await db.query({
+    query: "search text",
+    topK: 10,
+    filter: { source: "bio", category: "tech" } // Only search in matching docs
+  }); (Medium)
+- **Query Expansion** - Automatically expand queries with synonyms or related terms (Medium) (Will research more)
+
+### Data Management
+- **Update/Delete Operations** - Proper update and delete methods (currently updates create new entries) (need to read more about this, Medium)
+- **Multi-Store Queries** - Search across multiple stores simultaneously (Will read more & implement)
+
+### Embedding Providers
+- **More Providers** - Support for Cohere, HuggingFace Inference API, Ollama, etc. (Easy | Medium)
+- **Embedding Ensembles** - Combine multiple embedding models for better results (Easy | Medium)
+
+### Storage Improvements
+- **Compression** - Compress stored vectors to reduce disk usage (Medium | Hard)
+- **Incremental Indexing** - Update HNSW index incrementally instead of full rebuild  (Medium | Hard)
+
+### Developer Experience
+- **Observability** - Query metrics, performance monitoring, debug mode
+- **Better Error Messages** - More helpful error messages and validation
+- **Migration Tools** - Help migrate from other vector databases or a script to migrate the json into pinecone or any other service (for prod)
+
+### Advanced Features
+- **Versioning** - Track changes to documents over time
+- **Deduplication** - Automatically detect and handle duplicate documents (Hard)
+
+**Note:** These are ideas for future development. The current focus remains on simplicity and ease of use for MVPs and quick projects.
+
 ## License
 
 MIT
